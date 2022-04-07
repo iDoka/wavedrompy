@@ -1,46 +1,26 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # Copyright wavedrompy contributors.
 # SPDX-License-Identifier: MIT
 
 
+"""Wavedrompy  is a python module and command line fully compatible with WaveDrom,
+ which is originally implemented in JavaScript.
+ It is useful if you want to generate wavedrom diagrams from a python environment
+ or simply don't want to install the Node.js environment just to use WaveDrom as simple command line.
+"""
+
+__title__ = "wavedrompy"
+__description__ = "This tool is a direct translation of original Javascript file WaveDrom.js to Python."
+
+
 import argparse
 import json
+import yaml
 import os
 import sys
 
 from .waveform import WaveDrom
 from .assign import Assign
-from .version import version
+#from .version import version
 from .bitfield import BitField
-
-
-def render(source="", output=[], strict_js_features = False):
-    source = json.loads(source)
-    if source.get("signal"):
-        return WaveDrom().render_waveform(0, source, output, strict_js_features)
-    elif source.get("assign"):
-        return Assign().render(0, source, output)
-    elif source.get("reg"):
-        return BitField().renderJson(source)
-
-
-def render_write(source, output, strict_js_features = False):
-    jinput = source.read()
-    out = render(jinput, strict_js_features=strict_js_features)
-    out.write(output)
-
-
-def render_file(source, output, strict_js_features = False):
-    out = open(output, "w")
-    render_write(open(source, "r"), out, strict_js_features=strict_js_features)
-    out.close()
-
-
-def main():
-    parser = argparse.ArgumentParser(description="")
-    parser.add_argument("--input", "-i", help="<input wavedrom source filename>",
-                        required=True, type=argparse.FileType('r'))
-    parser.add_argument("--svg", "-s", help="<output SVG image file name>",
-                        nargs='?', type=argparse.FileType('w'), default=sys.stdout)
-    args = parser.parse_args()
-
-    render_write(args.input, args.svg, False)
