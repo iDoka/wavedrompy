@@ -12,13 +12,14 @@ from .base import SVGBase
 from .tspan import TspanParser
 
 class Options:
-    def __init__(self, vspace=80, hspace=800, lanes=1, bits=32, hflip=False, vflip=False, fontsize=14, fontfamily='sans-serif', fontweight='normal'):
+    def __init__(self, vspace=80, hspace=800, lanes=1, bits=32, hflip=False, vflip=False, notch=True, fontsize=14, fontfamily='sans-serif', fontweight='normal'):
         self.vspace = vspace if vspace > 19 else 80
         self.hspace = hspace if hspace > 39 else 800
         self.lanes = lanes if lanes > 0 else 1
         self.bits = bits if bits > 4 else 32
         self.hflip = hflip
         self.vflip = vflip
+        self.notch = notch
         self.fontsize = fontsize if fontsize > 5 else 14
         self.fontfamily = fontfamily
         self.fontweight = fontweight
@@ -181,8 +182,9 @@ class BitField(SVGBase):
             if j == mod or any([(e["lsb"] == i) for e in desc]):
                 g.add(self.vline((vspace / 2), j * (hspace / mod)));
             else:
-                g.add(self.vline((vspace / 16), j * (hspace / mod)));
-                g.add(self.vline((vspace / 16), j * (hspace / mod), vspace * 7 / 16));
+                if self.opt.notch:
+                  g.add(self.vline((vspace / 16), j * (hspace / mod)));
+                  g.add(self.vline((vspace / 16), j * (hspace / mod), vspace * 7 / 16));
             i += 1
 
         return g
