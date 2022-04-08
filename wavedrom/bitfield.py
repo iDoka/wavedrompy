@@ -12,7 +12,7 @@ from .base import SVGBase
 from .tspan import TspanParser
 
 class Options:
-    def __init__(self, vspace=80, hspace=800, lanes=1, bits=32, hflip=False, vflip=False, notch=True, fontsize=14, fontfamily='sans-serif', fontweight='normal'):
+    def __init__(self, vspace=80, hspace=800, lanes=1, bits=32, hflip=False, vflip=False, notch=True, opacity=False, fontsize=14, fontfamily='sans-serif', fontweight='normal'):
         self.vspace = vspace if vspace > 19 else 80
         self.hspace = hspace if hspace > 39 else 800
         self.lanes = lanes if lanes > 0 else 1
@@ -20,17 +20,28 @@ class Options:
         self.hflip = hflip
         self.vflip = vflip
         self.notch = notch
+        self.opacity = opacity
         self.fontsize = fontsize if fontsize > 5 else 14
         self.fontfamily = fontfamily
         self.fontweight = fontweight
 
 colors = {2: 'FF0000', 3: 'AAFF00', 4: '00FFD5', 5: 'FFBF00', 6: '00FF1A', 7: '006AFF'}
+colors_aka_opacity = {2: 'FFE5E5', 3: 'F6FFE5', 4: 'E5FFFB', 5: 'FFF9E5', 6: 'E5FFE7', 7: 'E5F0FF'}
+color_reserved = 'f0f0f0'
 
-def type_style(t):
+def type_style(self, t):
     if t in colors.keys():
-        return ";fill:#{}".format(colors[t])
+        if not self.opt.opacity:
+            return ";fill:#{}".format(colors[t])
+        else:
+            return ";fill:#{}".format(colors_aka_opacity[t])
     else:
-        return ''
+        if not self.opt.opacity:
+            return ''
+        else:
+            return ";fill:#{}".format(color_reserved)
+
+
 
 
 class BitField(SVGBase):
@@ -134,7 +145,10 @@ class BitField(SVGBase):
                     names.add(n)
 
             if not e.get('name') or e.get('type'):
-                style = 'fill-opacity:0.1' + type_style(e.get('type', 0))
+                if not self.opt.opacity:
+                    style = 'fill-opacity:0.1' + type_style(self, e.get('type', 0))
+                else:
+                    style = 'stroke:black;stroke-linecap:round;stroke-width:1' + type_style(self, e.get('type', 0))
                 if self.opt.vflip:
                     insert_x = lsbm
                 else:
