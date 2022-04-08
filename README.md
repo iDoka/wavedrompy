@@ -1,5 +1,24 @@
 # WaveDromPy
 
+## Motivation
+
+This is fork of original [WaveDromPy](https://github.com/wallento/wavedrompy).
+
+The main goal of this fork is to get better compatibility with the Asciidoctor technical documentation flow.
+
+Unfortunately [WaveDromPy](https://github.com/wallento/wavedrompy) as well as vanilla [WaveDrom](https://github.com/wavedrom/wavedrom) generate bitfields svg with unsupported in Asciidoctor features. At least:
+ * usage `fill-opacity` keyword
+ * usage HLS color space
+
+### New config options
+
+
+ - `opacity` (boolean): no changes if not specified or false (by default); replace usage of _fill-opacity_ to some workaround if true
+ - `notch` (boolean): no changes if not specified or true (by default); hide small notches (bits delimiter) in bitfield if false
+
+
+## Introduction
+
 This is a python module and command line fully compatible with [WaveDrom](https://wavedrom.com/), which is originally implemented in JavaScript. It is useful if you want to generate wavedrom diagrams from a python environment or simply don't want to install the _Node.js_ environment just to use WaveDrom as simple command line.
 
 WaveDromPy is for example used in [sphinxcontrib-wavedrom](https://pypi.org/project/sphinxcontrib-wavedrom/) to render wavedrom for Sphinx documentation. While the original project renders the diagrams in JavaScript in the browser, WaveDromPy renders them to SVG files.
@@ -16,11 +35,11 @@ The tool _WaveDromPy_ directly converts _WaveDrom_ compatible JSON files into SV
 It is most easy to just install wavedrom via pip/pypi:
 
     pip install wavedrom
-    
+
 Alternatively you can install the latest version from this repository:
 
     pip install git+https://github.com/wallento/wavedrompy
-    
+
 or from your local copy:
 
     pip install .
@@ -39,7 +58,7 @@ You can either use the tool from Python:
      { "name": "DQ",   "wave": "z.........5555z.", "data": "D0 D1 D2 D3" }
     ]}""")
     svg.saveas("demo1.svg")
-    
+
 This will render a waveform as:
 
 ![Example 1](https://raw.githubusercontent.com/wallento/wavedrompy/2e8568d50561f534133d036fee3bd35756f416d9/doc/demo1.svg?sanitize=true "Example 1")
@@ -59,7 +78,7 @@ A second feature is that WaveDrom can render logic circuit diagrams:
       ]
     ]}""")
     svg.saveas("demo2.svg")
- 
+
 This will render a as:
 
 ![Example 2](https://raw.githubusercontent.com/wallento/wavedrompy/2e8568d50561f534133d036fee3bd35756f416d9/doc/demo2.svg?sanitize=true "Example 2")
@@ -81,7 +100,7 @@ Finally, wavedrom can draw registers as bitfields:
     ]}""")
     svg.saveas("demo3.svg")
 
-    
+
 This will render as:
 
 ![Example 3](https://raw.githubusercontent.com/wallento/wavedrompy/2e8568d50561f534133d036fee3bd35756f416d9/doc/demo3.svg?sanitize=true "Example 3")
@@ -98,7 +117,7 @@ The command line uses Python's JSON interpreter that is more restrictive (cohere
 
  * All strings have to be written between quotes (""),
  * Extra comma (,) not supported at end of lists or dictionaries
- 
+
 ## AsciiDoctor example
 
 An _AsciiDoctor_ example is provided to directly generate timing diagrams from _AsciiDoctor_ formatted documents.
