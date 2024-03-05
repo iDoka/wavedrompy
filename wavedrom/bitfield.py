@@ -11,8 +11,22 @@ import svgwrite
 from .base import SVGBase
 from .tspan import TspanParser
 
+
 class Options:
-    def __init__(self, vspace=80, hspace=800, lanes=1, bits=32, hflip=False, vflip=False, notch=True, opacity=False, fontsize=14, fontfamily='sans-serif', fontweight='normal'):
+    def __init__(
+        self,
+        vspace=80,
+        hspace=800,
+        lanes=1,
+        bits=32,
+        hflip=False,
+        vflip=False,
+        notch=True,
+        opacity=False,
+        fontsize=14,
+        fontfamily="sans-serif",
+        fontweight="normal",
+    ):
         self.vspace = vspace if vspace > 19 else 80
         self.hspace = hspace if hspace > 39 else 800
         self.lanes = lanes if lanes > 0 else 1
@@ -25,9 +39,11 @@ class Options:
         self.fontfamily = fontfamily
         self.fontweight = fontweight
 
-colors = {2: 'FF0000', 3: 'AAFF00', 4: '00FFD5', 5: 'FFBF00', 6: '00FF1A', 7: '006AFF'}
+
+colors             = {2: 'FF0000', 3: 'AAFF00', 4: '00FFD5', 5: 'FFBF00', 6: '00FF1A', 7: '006AFF'}
 colors_aka_opacity = {2: 'FFE5E5', 3: 'F6FFE5', 4: 'E5FFFB', 5: 'FFF9E5', 6: 'E5FFE7', 7: 'E5F0FF'}
 color_reserved = 'f0f0f0'
+
 
 def type_style(self, t):
     if t in colors.keys():
@@ -42,8 +58,6 @@ def type_style(self, t):
             return ";fill:#{}".format(color_reserved)
 
 
-
-
 class BitField(SVGBase):
     def tspan_parse(self, text):
         parser = TspanParser()
@@ -51,10 +65,10 @@ class BitField(SVGBase):
         return parser.get_text()
 
     def hline(self, len, x=0, y=0):
-        return self.element.line(start=(x,y), end=(x+len,y))
+        return self.element.line(start=(x, y), end=(x + len, y))
 
     def vline(self, len, x=0, y=0):
-        return self.element.line(start=(x,y), end=(x,y+len))
+        return self.element.line(start=(x, y), end=(x, y + len))
 
     def get_text(self, body, x, y=None):
         x_list = None
@@ -63,7 +77,7 @@ class BitField(SVGBase):
         y_list = None
         if y:
             y_list = [y]
-        text = self.element.text('', x=x_list, y=y_list)
+        text = self.element.text("", x=x_list, y=y_list)
         for t in self.tspan_parse(str(body)):
             text.add(t)
         return text
@@ -78,13 +92,15 @@ class BitField(SVGBase):
                 res.append(self.get_text(val, xi, y))
             return res
         else:
-            if '\n' in attr:
-                names = attr.split('\n')
+            if "\n" in attr:
+                names = attr.split("\n")
                 count = len(names)
                 return [
-                    self.get_text(name, x, y + (-(count - 1) / 2 + i) * self.opt.fontsize)
+                    self.get_text(
+                        name, x, y + (-(count - 1) / 2 + i) * self.opt.fontsize
+                    )
                     for (i, name) in enumerate(names)
-                    ]
+                ]
             return [self.get_text(attr, x, y)]
 
     def get_attrs(self, e, step, lsbm, msbm):
@@ -92,21 +108,28 @@ class BitField(SVGBase):
             x = step * (msbm + lsbm) / 2
         else:
             x = step * (self.mod - ((msbm + lsbm) / 2) - 1)
-        attr = e['attr']
-        bits = e['bits']
+        attr = e["attr"]
+        bits = e["bits"]
         attrs = [attr]
         # 'attr' supports both a scalar and a list.
         if isinstance(attr, list):
             attrs = attr
-        return [self.get_label(a, x, 16 * i, step, bits)
-                for (i, a) in enumerate(attrs)]
+        return [self.get_label(a, x, 16 * i, step, bits) for (i, a) in enumerate(attrs)]
 
     def labelArr(self, desc):
         step = self.opt.hspace / self.mod
-        bits = self.container.g(transform="translate({},{})".format(step/2, self.opt.vspace/5))
-        names = self.container.g(transform="translate({},{})".format(step/2, self.opt.vspace/2+4))
-        attrs = self.container.g(transform="translate({},{})".format(step/2, self.opt.vspace))
-        blanks = self.container.g(transform="translate(0,{})".format(self.opt.vspace/4))
+        bits = self.container.g(
+            transform="translate({},{})".format(step / 2, self.opt.vspace / 5)
+        )
+        names = self.container.g(
+            transform="translate({},{})".format(step / 2, self.opt.vspace / 2 + 4)
+        )
+        attrs = self.container.g(
+            transform="translate({},{})".format(step / 2, self.opt.vspace)
+        )
+        blanks = self.container.g(
+            transform="translate(0,{})".format(self.opt.vspace / 4)
+        )
 
         for e in desc:
             lsbm = 0
@@ -128,20 +151,20 @@ class BitField(SVGBase):
                     continue
 
             if self.opt.vflip:
-                bits.add(self.get_text(lsb, x=[step*lsbm]))
+                bits.add(self.get_text(lsb, x=[step * lsbm]))
             else:
-                bits.add(self.get_text(lsb, x=[step*(self.mod-lsbm - 1)]))
+                bits.add(self.get_text(lsb, x=[step * (self.mod - lsbm - 1)]))
             if lsbm != msbm:
                 if self.opt.vflip:
                     bits.add(self.get_text(msb, x=[step * msbm]))
                 else:
                     bits.add(self.get_text(msb, x=[step * (self.mod - msbm - 1)]))
-            if e.get('name'):
+            if e.get("name"):
                 if self.opt.vflip:
-                    x = step*(msbm+lsbm)/2
+                    x = step * (msbm + lsbm) / 2
                 else:
-                    x = step*(self.mod-((msbm+lsbm)/2)-1)
-                for n in self.get_label(e['name'], x, 0):
+                    x = step * (self.mod - ((msbm + lsbm) / 2) - 1)
+                for n in self.get_label(e["name"], x, 0):
                     names.add(n)
 
             if not e.get('name') or e.get('type'):
@@ -154,9 +177,9 @@ class BitField(SVGBase):
                 else:
                     insert_x = self.mod - msbm - 1
                 insert = [step * insert_x, 0]
-                size = [step * (msbm - lsbm + 1), self.opt.vspace/2]
+                size = [step * (msbm - lsbm + 1), self.opt.vspace / 2]
                 blanks.add(self.element.rect(insert=insert, size=size, style=style))
-            if e.get('attr') is not None:
+            if e.get("attr") is not None:
                 for attr in self.get_attrs(e, step, lsbm, msbm):
                     for a in attr:
                         attrs.add(a)
@@ -169,7 +192,7 @@ class BitField(SVGBase):
         return g
 
     def labels(self, desc):
-        g = self.container.g(text_anchor='middle')
+        g = self.container.g(text_anchor="middle")
         g.add(self.labelArr(desc))
         return g
 
@@ -178,14 +201,19 @@ class BitField(SVGBase):
         vspace = self.opt.vspace
         mod = self.mod
 
-        g = self.container.g(stroke='black', stroke_width=1, stroke_linecap='round', transform="translate(0,{})".format(vspace/4))
+        g = self.container.g(
+            stroke="black",
+            stroke_width=1,
+            stroke_linecap="round",
+            transform="translate(0,{})".format(vspace / 4),
+        )
 
-        g.add(self.hline(hspace));
+        g.add(self.hline(hspace))
         if self.opt.vflip:
-            g.add(self.vline(0));
+            g.add(self.vline(0))
         else:
-            g.add(self.vline(vspace / 2));
-        g.add(self.hline(hspace, 0, vspace / 2));
+            g.add(self.vline(vspace / 2))
+        g.add(self.hline(hspace, 0, vspace / 2))
 
         i = self.index * mod
         if self.opt.vflip:
@@ -194,7 +222,7 @@ class BitField(SVGBase):
             r = range(mod, 0, -1)
         for j in r:
             if j == mod or any([(e["lsb"] == i) for e in desc]):
-                g.add(self.vline((vspace / 2), j * (hspace / mod)));
+                g.add(self.vline((vspace / 2), j * (hspace / mod)))
             else:
                 if self.opt.notch:
                   g.add(self.vline((vspace / 16), j * (hspace / mod)));
@@ -208,13 +236,15 @@ class BitField(SVGBase):
         if self.opt.hflip:
             i = self.index
         else:
-            i = self.opt.lanes-self.index-1
+            i = self.opt.lanes - self.index - 1
         y = i * self.opt.vspace + 0.5
-        g = self.container.g(transform = "translate({},{})".format(x, y),
-                             text_anchor = "middle",
-                             font_size = self.opt.fontsize,
-                             font_family = self.opt.fontfamily,
-                             font_weight = self.opt.fontweight)
+        g = self.container.g(
+            transform="translate({},{})".format(x, y),
+            text_anchor="middle",
+            font_size=self.opt.fontsize,
+            font_family=self.opt.fontfamily,
+            font_weight=self.opt.fontweight,
+        )
 
         g.add(self.cage(desc))
         g.add(self.labels(desc))
@@ -223,14 +253,14 @@ class BitField(SVGBase):
     def get_max_attrs(self, desc):
         max_count = 0
         for e in desc:
-            if 'attr' in e:
-                if isinstance(e['attr'], list):
-                    max_count = max(max_count, len(e['attr']))
+            if "attr" in e:
+                if isinstance(e["attr"], list):
+                    max_count = max(max_count, len(e["attr"]))
                 else:
                     max_count = max(max_count, 1)
         return max_count
 
-    def render(self, desc, opt = Options()):
+    def render(self, desc, opt=Options()):
         self.opt = opt
 
         # Compute extra per-lane space needed if there are more than one attr
@@ -257,9 +287,9 @@ class BitField(SVGBase):
         for e in desc:
             e["lsb"] = lsb
             e["lsbm"] = lsb % self.mod
-            lsb += e['bits']
-            e['msb'] = lsb - 1
-            e['msbm'] = e['msb'] % self.mod
+            lsb += e["bits"]
+            e["msb"] = lsb - 1
+            e["msbm"] = e["msb"] % self.mod
 
         for i in range(opt.lanes):
             self.index = i
@@ -270,6 +300,6 @@ class BitField(SVGBase):
     def renderJson(self, source):
         opt = Options()
         if source.get("config"):
-            opt = Options(**source['config'])
+            opt = Options(**source["config"])
         if source.get("reg"):
-            return self.render(source['reg'], opt)
+            return self.render(source["reg"], opt)

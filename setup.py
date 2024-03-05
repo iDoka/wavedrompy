@@ -22,7 +22,8 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 # Fields marked as "Optional" may be commented out.
 
 requires = ["svgwrite",
-            "six" # 2 and 3 compatibility
+            "six", # 2 and 3 compatibility
+            "pyyaml"
             ]
 setup(
     # This is the name of your project. The first time you publish this
@@ -99,14 +100,11 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3"
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10"
     ],
 
     # This field adds keywords for your project which will appear on the
@@ -133,6 +131,9 @@ setup(
     # For an analysis of "install_requires" vs pip"s requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=requires,  # Optional
+
+    # The minimum required Python version for installation
+    python_requires='>=3.7',
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
