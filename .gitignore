@@ -105,3 +105,6 @@ test/*.svg
 test/*.png
 test/*.pdf
 
+playground/
+
+

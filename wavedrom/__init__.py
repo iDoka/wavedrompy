@@ -21,7 +21,7 @@ import sys
 
 from .waveform import WaveDrom
 from .assign import Assign
-from .version import version
+#from .version import version
 from .bitfield import BitField
 
 import json
